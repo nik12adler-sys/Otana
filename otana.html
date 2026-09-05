@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اوتانا | برنامه تمرینی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EFF0F3;
+    --ink:#14141a;
+    --muted:#9497a3;
+    --card1:#1c1c22;
+    --card2:#0d0d10;
+    --red1:#ff6a63;
+    --red2:#e6394f;
+    --ring-purple:#8b7cf6;
+    --ring-gold:#f5a94f;
+    --ring-pink:#ff5c7a;
+    --green:#3ecb71;
+    --line:#26262e;
+    --surface:#ffffff;
+    --surface-border:#e2e3e8;
+    --surface-border2:#eceef2;
+    --divider:#dcdde3;
+    --badge-bg:#fdeceb;
+    --del-color:#b2b3bd;
+    --footer-color:#c1c2c9;
+  }
+  html[data-theme="dark"]{
+    --bg:#0b0b0e;
+    --ink:#f2f2f5;
+    --muted:#9a9aa5;
+    --surface:#17171c;
+    --surface-border:#2a2a33;
+    --surface-border2:#26262e;
+    --divider:#33333d;
+    --badge-bg:rgba(230,57,79,.18);
+    --del-color:#6f6f7a;
+    --footer-color:#55555f;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Vazirmatn',sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    -webkit-font-smoothing:antialiased;
+    transition:background .25s ease, color .25s ease;
+  }
+  .phone{
+    width:100%;
+    max-width:410px;
+    min-height:100vh;
+    background:var(--bg);
+    position:relative;
+    overflow-x:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  /* ---------- status bar ---------- */
+  .statusbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 22px 4px;
+    font-size:15px;
+    font-weight:700;
+    color:var(--ink);
+    flex-shrink:0;
+  }
+  .statusbar .icons{display:flex;gap:6px;align-items:center;}
+  .home-indicator{
+    width:120px;height:5px;border-radius:3px;background:var(--ink);opacity:.85;
+    margin:10px auto 8px;flex-shrink:0;
+  }
+  /* ---------- screens ---------- */
+  .screen{display:none;flex-direction:column;flex:1;}
+  .screen.active{display:flex;}
+
+  /* ---------- splash ---------- */
+  #splash{
+    background:radial-gradient(circle at 50% 40%, #232329 0%, #08080a 75%);
+    align-items:center;justify-content:center;min-height:100vh;
+  }
+  #splash .mark{
+    width:86px;height:86px;border-radius:26px;
+    background:linear-gradient(145deg,var(--red1),var(--red2));
+    display:flex;align-items:center;justify-content:center;
+    transform:scale(.7);opacity:0;filter:blur(8px);
+    animation:splashIn 2s cubic-bezier(.16,.9,.25,1) forwards;
+    box-shadow:0 20px 50px -10px rgba(230,57,79,.55);
+  }
+  #splash .mark svg{width:42px;height:42px;}
+  #splash .caption{
+    position:absolute;bottom:90px;color:#5c5c66;font-size:13px;font-weight:600;
+    letter-spacing:.5px;opacity:0;animation:capIn .8s ease forwards;animation-delay:1.1s;
+  }
+  @keyframes splashIn{
+    0%{transform:scale(.55) rotate(-8deg);opacity:0;filter:blur(14px);}
+    55%{transform:scale(1.08) rotate(1deg);opacity:1;filter:blur(0px);}
+    100%{transform:scale(1) rotate(0deg);opacity:1;filter:blur(0px);}
+  }
+  @keyframes capIn{to{opacity:1;}}
+
+  /* ---------- generic content padding ---------- */
+  .content{padding:6px 20px 40px;flex:1;overflow-y:auto;}
+
+  /* ---------- onboarding ---------- */
+  #onboarding .content{display:flex;flex-direction:column;justify-content:center;min-height:80vh;}
+  .ob-title{font-size:23px;font-weight:800;margin-bottom:6px;}
+  .ob-sub{color:var(--muted);font-size:14px;margin-bottom:28px;line-height:1.9;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:7px;font-weight:600;}
+  .field input,.field select{
+    width:100%;border:1.5px solid var(--surface-border);background:var(--surface);border-radius:14px;
+    padding:13px 15px;font-family:inherit;font-size:15px;font-weight:600;color:var(--ink);
+    outline:none;transition:border-color .15s;
+  }
+  .field input:focus,.field select:focus{border-color:var(--red2);}
+  .btn-primary{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    background:linear-gradient(90deg,var(--red1),var(--red2));
+    color:#fff;border:none;border-radius:16px;padding:16px;
+    font-family:inherit;font-size:15.5px;font-weight:700;cursor:pointer;
+    box-shadow:0 12px 24px -8px rgba(230,57,79,.5);width:100%;margin-top:6px;
+  }
+  .btn-secondary{
+    background:var(--surface);border:1.5px solid var(--surface-border);color:var(--ink);
+    border-radius:16px;padding:14px;font-family:inherit;font-size:14.5px;font-weight:700;
+    cursor:pointer;width:100%;
+  }
+  .btn-ghost{background:none;border:none;color:var(--red2);font-family:inherit;font-weight:700;font-size:14px;cursor:pointer;}
+
+  /* ---------- home header ---------- */
+  .home-header{display:flex;align-items:flex-start;justify-content:space-between;padding:8px 20px 18px;}
+  .greet{font-size:20px;font-weight:800;}
+  .greet-sub{color:var(--muted);font-size:13.5px;font-weight:600;margin-top:5px;}
+  .date-line{color:var(--muted);font-size:11.5px;font-weight:600;margin-top:5px;}
+  .header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+  .theme-toggle{
+    width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--surface-border);
+    display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;flex-shrink:0;
+    transition:background .25s ease, border-color .25s ease;
+  }
+  .avatar{
+    width:42px;height:42px;border-radius:50%;
+    background:linear-gradient(145deg,var(--red1),var(--red2));
+    color:#fff;font-weight:800;font-size:15px;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+  }
+
+  /* ---------- hero card ---------- */
+  .hero{
+    margin:0 20px 22px;border-radius:28px;padding:22px 20px 20px;
+    background:linear-gradient(165deg,var(--card1),var(--card2));
+    color:#fff;position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:'';position:absolute;left:-40px;top:-60px;width:180px;height:180px;border-radius:50%;
+    background:radial-gradient(circle, rgba(230,57,79,.35), transparent 70%);pointer-events:none;
+  }
+  .hero-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .hero-tag{color:#8f8f9c;font-size:12.5px;font-weight:600;margin-bottom:8px;}
+  .hero-title{font-size:21px;font-weight:800;line-height:1.5;max-width:190px;}
+  .ring-wrap{position:relative;width:80px;height:80px;flex-shrink:0;}
+  .ring-wrap svg{transform:rotate(-90deg);}
+  .ring-center{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+  .ring-pct{font-size:16px;font-weight:800;}
+  .ring-week{font-size:10px;color:#9a9aa5;font-weight:600;margin-top:1px;}
+  .hero-stats{
+    display:flex;align-items:center;gap:12px;margin-top:18px;padding:14px 4px;
+    border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .hs-item{flex:1;text-align:center;}
+  .hs-item .v{font-size:13.5px;font-weight:700;}
+  .hs-item .l{font-size:11px;color:#8f8f9c;margin-top:3px;}
+  .hs-div{width:1px;height:26px;background:rgba(255,255,255,.1);}
+  .hero-venue{display:flex;align-items:center;gap:6px;color:#8f8f9c;font-size:12.5px;font-weight:600;margin-top:14px;}
+  .btn-start{
+    margin-top:16px;width:100%;border:none;border-radius:16px;padding:16px;
+    background:linear-gradient(90deg,var(--red1),var(--red2));
+    color:#fff;font-family:inherit;font-size:15.5px;font-weight:800;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    box-shadow:0 14px 26px -10px rgba(230,57,79,.6);
+  }
+  .btn-empty{
+    margin-top:16px;width:100%;border:1.5px dashed rgba(255,255,255,.25);border-radius:16px;padding:15px;
+    background:transparent;color:#d5d5db;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;
+  }
+
+  /* ---------- three stat rings ---------- */
+  .stat-row{display:flex;justify-content:space-between;padding:4px 20px 24px;}
+  .stat-item{display:flex;flex-direction:column;align-items:center;gap:9px;}
+  .stat-item .num{font-size:16px;font-weight:800;}
+  .stat-item .lbl{font-size:12px;color:var(--muted);font-weight:600;}
+
+  /* ---------- today's moves ---------- */
+  .section-head{display:flex;justify-content:space-between;align-items:center;padding:0 20px 12px;}
+  .section-title{font-size:15.5px;font-weight:800;}
+  .link-all{font-size:12.5px;color:var(--red2);font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;}
+  .exlist{padding:0 20px;display:flex;flex-direction:column;gap:10px;}
+  .exrow{
+    background:var(--surface);border-radius:16px;padding:13px 14px;display:flex;align-items:center;gap:12px;
+    border:1px solid var(--surface-border2);
+  }
+  .exrow.done{opacity:.55;}
+  .check{
+    width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    border:2px solid var(--divider);
+  }
+  .check.on{background:var(--green);border-color:var(--green);}
+  .check svg{width:13px;height:13px;}
+  .ex-name{font-size:14px;font-weight:700;flex:1;}
+  .ex-meta{font-size:12px;color:var(--muted);font-weight:600;}
+  .footer-note{text-align:center;color:var(--muted);font-size:12.5px;font-weight:600;padding:22px 20px 10px;}
+
+  /* ---------- editor ---------- */
+  .top-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 6px;}
+  .top-bar h2{font-size:17px;font-weight:800;}
+  .icon-btn{background:var(--surface);border:1px solid var(--surface-border);border-radius:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .icon-btn svg path{stroke:var(--ink);}
+  .tabs{display:flex;gap:8px;padding:14px 20px 4px;}
+  .tab{flex:1;text-align:center;padding:10px;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;background:var(--surface);border:1px solid var(--surface-border);color:var(--muted);}
+  .tab.active{background:linear-gradient(90deg,var(--red1),var(--red2));color:#fff;border-color:transparent;}
+  .sess-card{background:var(--surface);border:1px solid var(--surface-border2);border-radius:18px;padding:16px;margin-bottom:12px;}
+  .sess-card .row1{display:flex;justify-content:space-between;align-items:flex-start;}
+  .sess-card .title{font-size:15px;font-weight:800;}
+  .sess-card .sub{font-size:12.5px;color:var(--muted);font-weight:600;margin-top:4px;}
+  .sess-actions{display:flex;gap:8px;}
+  .sess-actions button{background:none;border:none;cursor:pointer;font-size:12.5px;font-weight:700;font-family:inherit;}
+  .sess-actions .edit{color:var(--red2);}
+  .sess-actions .del{color:var(--del-color);}
+  .current-badge{display:inline-block;margin-top:8px;background:var(--badge-bg);color:var(--red2);font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;}
+
+  .exform-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
+  .exform-row input{flex:1;border:1.5px solid var(--surface-border);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:13.5px;font-weight:600;}
+  .exform-row .rm{background:var(--surface);border:1px solid var(--surface-border2);border-radius:10px;width:36px;height:36px;flex-shrink:0;cursor:pointer;color:var(--del-color);font-size:16px;}
+  .add-ex-btn{width:100%;border:1.5px dashed var(--surface-border);border-radius:12px;padding:10px;background:none;color:var(--muted);font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;margin-bottom:14px;}
+  .form-panel{background:var(--surface);border:1px solid var(--surface-border2);border-radius:18px;padding:16px;margin-bottom:14px;}
+  .form-panel h3{font-size:14.5px;font-weight:800;margin-bottom:12px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .btn-row{display:flex;gap:10px;margin-top:4px;}
+
+  /* ---------- workout ---------- */
+  #workout{background:var(--card2);color:#fff;min-height:100vh;}
+  .wk-top{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 4px;}
+  .wk-exit{color:#8f8f9c;font-size:13.5px;font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;}
+  .wk-title{font-size:15px;font-weight:800;text-align:center;}
+  .wk-timer{text-align:center;margin:22px 0 6px;}
+  .wk-timer .t{font-size:44px;font-weight:800;letter-spacing:1px;font-variant-numeric:tabular-nums;}
+  .wk-timer .lbl{color:#8f8f9c;font-size:12.5px;font-weight:600;margin-top:2px;}
+  .wk-list{padding:10px 20px 130px;display:flex;flex-direction:column;gap:10px;}
+  .wk-ex{
+    background:#17171c;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;
+    border:1.5px solid transparent;
+  }
+  .wk-ex.current{border-color:var(--red2);background:#1e1518;}
+  .wk-ex.done{opacity:.4;}
+  .wk-ex .idx{width:28px;height:28px;border-radius:50%;background:#26262e;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex-shrink:0;}
+  .wk-ex.current .idx{background:var(--red2);}
+  .wk-ex .name{font-size:14.5px;font-weight:700;flex:1;}
+  .wk-ex .meta{font-size:12px;color:#9a9aa5;font-weight:600;}
+  .wk-bottom{
+    position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:410px;
+    padding:16px 20px 26px;background:linear-gradient(180deg, transparent, #0d0d10 30%);
+  }
+  .btn-next{
+    width:100%;border:none;border-radius:16px;padding:17px;font-family:inherit;font-size:15.5px;font-weight:800;
+    background:linear-gradient(90deg,var(--red1),var(--red2));color:#fff;cursor:pointer;
+    box-shadow:0 14px 30px -10px rgba(230,57,79,.6);
+  }
+
+  /* ---------- toast ---------- */
+  .toast{
+    position:fixed;bottom:36px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:#1c1c22;color:#fff;padding:13px 22px;border-radius:14px;font-size:13.5px;font-weight:700;
+    opacity:0;transition:all .3s ease;z-index:50;max-width:340px;text-align:center;pointer-events:none;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ---------- report tab ---------- */
+  .report-box{background:var(--surface);border:1px solid var(--surface-border2);border-radius:18px;padding:18px;text-align:center;}
+  .report-box .ricon{font-size:34px;margin-bottom:8px;}
+  .report-box h3{font-size:15px;font-weight:800;margin-bottom:6px;}
+  .report-box p{font-size:13px;color:var(--muted);font-weight:600;line-height:1.9;margin-bottom:16px;}
+
+  /* ---------- pdf report template (rendered off-screen, then rasterized) ---------- */
+  #reportRoot{
+    position:fixed;top:0;left:-99999px;width:760px;background:#fff;color:#14141a;
+    font-family:'Vazirmatn',sans-serif;padding:36px;direction:rtl;
+  }
+  .rp-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #14141a;padding-bottom:18px;margin-bottom:22px;}
+  .rp-header h1{font-size:24px;font-weight:900;}
+  .rp-header .sub{color:#9497a3;font-size:13px;font-weight:700;margin-top:6px;}
+  .rp-header .range{font-size:13px;font-weight:700;color:#e6394f;text-align:left;}
+  .rp-section{margin-bottom:26px;}
+  .rp-section h2{font-size:15px;font-weight:800;margin-bottom:12px;border-right:4px solid #e6394f;padding-right:10px;}
+  .rp-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .rp-card{background:#f7f7f9;border-radius:14px;padding:14px;text-align:center;}
+  .rp-card .v{font-size:18px;font-weight:800;}
+  .rp-card .l{font-size:11.5px;color:#9497a3;font-weight:700;margin-top:4px;}
+  .rp-rings{display:flex;justify-content:space-around;align-items:center;}
+  .rp-ring-item{display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .rp-ring-item .num{font-size:16px;font-weight:800;}
+  .rp-ring-item .lbl{font-size:11.5px;color:#9497a3;font-weight:700;}
+  .rp-delta{display:flex;gap:12px;}
+  .rp-delta-card{flex:1;background:#f7f7f9;border-radius:14px;padding:12px;text-align:center;}
+  .rp-delta-card .arrow{font-size:14px;font-weight:900;}
+  .rp-delta-card .arrow.up{color:#3ecb71;}
+  .rp-delta-card .arrow.down{color:#e6394f;}
+  .rp-bars{display:flex;align-items:flex-end;gap:10px;height:140px;padding:0 4px;}
+  .rp-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+  .rp-bar{width:100%;max-width:34px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#ff6a63,#e6394f);}
+  .rp-bar-lbl{font-size:11px;color:#9497a3;font-weight:700;margin-top:8px;}
+  .rp-bar-val{font-size:10.5px;color:#14141a;font-weight:800;margin-bottom:4px;}
+  .rp-sess-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #eceef2;}
+  .rp-sess-row:last-child{border-bottom:none;}
+  .rp-sess-title{font-size:13.5px;font-weight:700;flex:1;}
+  .rp-sess-bar{flex:1;height:8px;background:#eceef2;border-radius:5px;overflow:hidden;}
+  .rp-sess-bar-in{height:100%;background:#3ecb71;}
+  .rp-sess-status{font-size:11.5px;font-weight:700;width:70px;text-align:left;}
+  .rp-insight{background:#f7f7f9;border-radius:14px;padding:16px 18px;}
+  .rp-insight p{font-size:13.5px;line-height:2.1;font-weight:600;margin-bottom:6px;}
+  .rp-insight p::before{content:'•  ';color:#e6394f;font-weight:900;}
+  .rp-footer{text-align:center;color:#c1c2c9;font-size:11px;font-weight:700;margin-top:20px;}
+
+  /* ---------- playlist modal ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center;
+    z-index:200;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal-sheet{
+    width:100%;max-width:410px;max-height:82vh;background:var(--bg);border-radius:24px 24px 0 0;
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .modal-head{
+    display:flex;align-items:center;justify-content:space-between;padding:18px 20px 10px;flex-shrink:0;
+  }
+  .modal-title{font-size:16.5px;font-weight:800;}
+  .pl-body{padding:6px 20px 10px;overflow-y:auto;flex:1;}
+  .song-list{margin-top:14px;display:flex;flex-direction:column;gap:9px;}
+  .song-row{
+    display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--surface-border2);
+    border-radius:14px;padding:10px 12px;
+  }
+  .song-row.sel{border-color:var(--red2);}
+  .song-play{
+    width:32px;height:32px;border-radius:50%;background:var(--bg);border:1px solid var(--surface-border);
+    flex-shrink:0;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;
+  }
+  .song-name{flex:1;font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .song-select{
+    background:none;border:1.5px solid var(--surface-border);border-radius:20px;padding:6px 12px;
+    font-family:inherit;font-size:12px;font-weight:700;color:var(--ink);cursor:pointer;flex-shrink:0;
+  }
+  .song-row.sel .song-select{background:var(--red2);border-color:var(--red2);color:#fff;}
+  .song-del{background:none;border:none;color:var(--del-color);font-size:15px;cursor:pointer;flex-shrink:0;}
+  .pl-empty{color:var(--muted);font-size:13px;font-weight:600;text-align:center;padding:26px 10px;}
+  .modal-foot{padding:12px 20px 22px;flex-shrink:0;}
+  .wk-icon-btn{
+    width:36px;height:36px;border-radius:50%;background:#1c1c22;border:1px solid #2a2a33;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;flex-shrink:0;
+  }
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+
+  <!-- SPLASH -->
+  <div class="screen active" id="splash">
+    <div class="mark">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 7v10M4 9v6M20 7v10M22 9v6M6 12h12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="caption">اوتانا</div>
+  </div>
+
+  <!-- ONBOARDING -->
+  <div class="screen" id="onboarding">
+    <div class="statusbar"><span class="sb-time">۹:۴۱</span><div class="icons">📶 🔋</div></div>
+    <div class="content">
+      <div class="ob-title">خوش اومدی 👋</div>
+      <div class="ob-sub">قبل از شروع، چندتا اطلاعات کوچیک ازت می‌خوایم تا برنامه‌ات رو دقیق بچینیم.</div>
+      <div class="field"><label>اسم</label><input id="ob-name" placeholder="مثلاً ماهان"></div>
+      <div class="grid2">
+        <div class="field"><label>وزن (کیلوگرم)</label><input id="ob-weight" type="number" placeholder="۷۵"></div>
+        <div class="field"><label>قد (سانتی‌متر)</label><input id="ob-height" type="number" placeholder="۱۷۸"></div>
+      </div>
+      <button class="btn-primary" onclick="saveOnboarding()">شروع کن</button>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen" id="home">
+    <div class="statusbar"><span class="sb-time">۹:۴۱</span><div class="icons">📶 🔋</div></div>
+    <div class="home-header">
+      <div>
+        <div class="greet" id="h-greet">سلام، ماهان 👋</div>
+        <div class="greet-sub" id="h-sub">هفته ۱ باشگاه اوتانا</div>
+        <div class="date-line" id="h-date"></div>
+      </div>
+      <div class="header-actions">
+        <button class="theme-toggle" id="playlistBtnHome" onclick="openPlaylist()" title="پلی‌لیست" aria-label="پلی‌لیست">🎵</button>
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="تغییر تم" aria-label="تغییر تم">🌙</button>
+        <div class="avatar" id="h-avatar" onclick="openEditor()">م</div>
+      </div>
+    </div>
+
+    <div class="hero" id="hero"></div>
+
+    <div class="stat-row" id="statRow"></div>
+
+    <div class="section-head">
+      <div class="section-title">حرکات امروز</div>
+      <button class="link-all" onclick="openEditor(1)">همه برنامه</button>
+    </div>
+    <div class="exlist" id="exList"></div>
+    <div class="footer-note" id="footNote">امروز روز خوبی برای تمرینه 💪</div>
+  </div>
+
+  <!-- EDITOR -->
+  <div class="screen" id="editor">
+    <div class="statusbar"><span class="sb-time">۹:۴۱</span><div class="icons">📶 🔋</div></div>
+    <div class="top-bar">
+      <button class="icon-btn" onclick="closeEditor()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#14141a" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h2>تنظیمات</h2>
+      <div style="width:36px;"></div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" id="tab-profile" onclick="switchTab('profile')">پروفایل</div>
+      <div class="tab" id="tab-program" onclick="switchTab('program')">برنامه‌ها</div>
+      <div class="tab" id="tab-report" onclick="switchTab('report')">گزارش</div>
+    </div>
+    <div class="content">
+      <div id="pane-profile">
+        <div class="field"><label>اسم</label><input id="pf-name"></div>
+        <div class="grid2">
+          <div class="field"><label>وزن (کیلوگرم)</label><input id="pf-weight" type="number"></div>
+          <div class="field"><label>قد (سانتی‌متر)</label><input id="pf-height" type="number"></div>
+        </div>
+        <div class="field"><label>نام باشگاه</label><input id="pf-gym"></div>
+        <div class="field"><label>شماره هفته</label><input id="pf-week" type="number"></div>
+        <div class="field"><label>تعداد جلسات باقی‌مانده (پکیج باشگاه)</label><input id="pf-sessions-left" type="number" placeholder="مثلاً ۱۰"></div>
+        <button class="btn-primary" onclick="saveProfile()">ذخیره تغییرات</button>
+      </div>
+      <div id="pane-program" style="display:none;">
+        <div id="sessList"></div>
+        <button class="btn-secondary" onclick="openSessionForm()" style="margin-top:4px;">+ افزودن جلسه تمرینی</button>
+        <div id="sessFormHost" style="margin-top:14px;"></div>
+      </div>
+      <div id="pane-report" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- hidden off-screen report template, rasterized into the PDF -->
+  <div id="reportRoot"></div>
+
+  <!-- WORKOUT -->
+  <div class="screen" id="workout">
+    <div class="wk-top">
+      <button class="wk-exit" onclick="exitWorkout()">انصراف</button>
+      <div class="wk-title" id="wk-title"></div>
+      <button class="wk-icon-btn" onclick="openPlaylist()" title="پلی‌لیست" aria-label="پلی‌لیست">🎵</button>
+    </div>
+    <div class="wk-timer">
+      <div class="t" id="wk-time">۰۰:۰۰</div>
+      <div class="lbl">زمان سپری‌شده</div>
+    </div>
+    <div class="wk-list" id="wk-list"></div>
+    <div class="wk-bottom"><button class="btn-next" id="wk-next-btn" onclick="wkNext()">بعدی</button></div>
+  </div>
+
+  <div class="home-indicator" id="homeInd"></div>
+  <div class="toast" id="toast"></div>
+
+  <!-- PLAYLIST MODAL (overlay — does not change the active screen underneath) -->
+  <div class="modal-overlay" id="playlistModal">
+    <div class="modal-sheet">
+      <div class="modal-head">
+        <div class="modal-title">پلی‌لیست</div>
+        <button class="icon-btn" onclick="closePlaylistModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="var(--ink)" stroke-width="2.3" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="pl-body">
+        <input type="file" id="songUploadInput" accept="audio/*" style="display:none" onchange="handleSongUpload(event)">
+        <button class="btn-secondary" onclick="document.getElementById('songUploadInput').click()">+ آپلود آهنگ از فایل‌ها</button>
+        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:8px;text-align:center;">حداکثر حجم هر فایل: ۱.۵ مگابایت (فایل‌های صوتی کوتاه یا فشرده بهتر جواب می‌دن)</div>
+        <div class="song-list" id="songListHost"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn-primary" style="margin-top:0;" onclick="confirmPlaylistSelection()">تایید</button>
+      </div>
+    </div>
+  </div>
+  <audio id="plAudio"></audio>
+</div>
+
+<script>
+/* ---------------- storage helpers ---------------- */
+const KEY = 'appdata';
+function fa(n){ return String(n).replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]); }
+function uid(){ return Math.random().toString(36).slice(2,10); }
+
+function defaultData(){
+  return { profile:null, settings:{gymName:'باشگاه اوتانا', week:1, sessionsLeft:null}, sessions:[], currentIndex:0, history:[], weightLog:[], workoutState:null, playlist:[], selectedSongId:null };
+}
+async function loadData(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ console.error('load failed', e); return null; }
+}
+async function saveData(data){
+  try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){ console.error('save failed', e); toast('حافظه ذخیره‌سازی پر شده — چند تا آهنگ رو پاک کن'); }
+}
+
+let DATA = null;
+
+/* ---------------- theme ---------------- */
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme==='dark' ? 'dark' : 'light');
+  const btn = document.getElementById('themeToggle');
+  if(btn) btn.textContent = theme==='dark' ? '☀️' : '🌙';
+}
+async function toggleTheme(){
+  if(!DATA) return;
+  if(!DATA.settings) DATA.settings = {};
+  const next = (DATA.settings.theme==='dark') ? 'light' : 'dark';
+  DATA.settings.theme = next;
+  applyTheme(next);
+  await saveData(DATA);
+}
+
+/* ---------------- live clock + date (Iran time) ---------------- */
+function updateClock(){
+  try{
+    const t = new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Tehran',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
+    document.querySelectorAll('.sb-time').forEach(el=> el.textContent = fa(t));
+  }catch(e){ /* ignore */ }
+}
+function updateDateLine(){
+  const el = document.getElementById('h-date');
+  if(!el) return;
+  try{
+    const now = new Date();
+    const jalali = new Intl.DateTimeFormat('fa-IR-u-ca-persian',{day:'numeric',month:'long',year:'numeric'}).format(now);
+    const gregorian = new Intl.DateTimeFormat('fa-IR-u-ca-gregory',{day:'numeric',month:'long',year:'numeric'}).format(now);
+    el.textContent = `${jalali} ‏(${gregorian} م)`;
+  }catch(e){ /* ignore */ }
+}
+updateClock();
+setInterval(updateClock, 15000);
+setInterval(updateDateLine, 60000);
+
+/* ---------------- screen nav ---------------- */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('homeInd').style.display = (id==='workout')?'none':'block';
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._tt);
+  window._tt = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* ---------------- boot ---------------- */
+window.addEventListener('load', () => {
+  setTimeout(boot, 2000);
+});
+async function boot(){
+  DATA = await loadData();
+  if(!DATA){ DATA = defaultData(); await saveData(DATA); }
+  if(!DATA.settings) DATA.settings = {};
+  if(!DATA.playlist) DATA.playlist = [];
+  applyTheme(DATA.settings.theme || 'light');
+  updateClock();
+  updateDateLine();
+  if(!DATA.profile){ showScreen('onboarding'); return; }
+  renderHome();
+  if(DATA.workoutState){
+    resumeWorkout();
+  } else {
+    showScreen('home');
+  }
+}
+
+/* ---------------- onboarding ---------------- */
+async function saveOnboarding(){
+  const name = document.getElementById('ob-name').value.trim();
+  const weight = parseFloat(document.getElementById('ob-weight').value) || 70;
+  const height = parseFloat(document.getElementById('ob-height').value) || 175;
+  if(!name){ toast('اسم رو وارد کن'); return; }
+  DATA.profile = { name, weight, height, createdAt: new Date().toISOString() };
+  if(!DATA.weightLog) DATA.weightLog = [];
+  logWeight(weight);
+  await saveData(DATA);
+  renderHome();
+  showScreen('home');
+  toast('خوش اومدی، برنامه‌ات رو بساز 🎯');
+  setTimeout(()=>openEditor(1), 900);
+}
+
+/* ---------------- calc helpers ---------------- */
+const MET = { 'سبک':3.5, 'متوسط':5.6, 'سنگین':7.8 };
+const HR  = { 'سبک':108, 'متوسط':129, 'سنگین':149 };
+function calcCalories(level, weightKg, minutes){
+  const met = MET[level] || 5.6;
+  return Math.round(met*3.5*weightKg/200*minutes);
+}
+function weeklyHistory(){
+  const now = Date.now();
+  const weekMs = 7*24*60*60*1000;
+  return DATA.history.filter(h => now - new Date(h.date).getTime() <= weekMs);
+}
+function logWeight(weight){
+  if(!DATA.weightLog) DATA.weightLog = [];
+  const todayKey = new Date().toDateString();
+  const last = DATA.weightLog[DATA.weightLog.length-1];
+  if(last && new Date(last.date).toDateString() === todayKey){
+    last.weight = weight;
+  } else {
+    DATA.weightLog.push({ date: new Date().toISOString(), weight });
+  }
+}
+
+/* ---------------- weekly analysis engine ---------------- */
+const WEEKDAY_SHORT = ['ی','د','س','چ','پ','ج','ش']; // Sun..Sat matches JS getDay()
+function rangeHistory(startDaysAgo, endDaysAgo){
+  const now = Date.now();
+  return DATA.history.filter(h=>{
+    const diffDays = (now - new Date(h.date).getTime())/(24*3600*1000);
+    return diffDays >= endDaysAgo && diffDays < startDaysAgo;
+  });
+}
+function sumField(arr, f){ return arr.reduce((a,x)=>a+(x[f]||0),0); }
+
+function analyzeWeek(){
+  const thisWeek = rangeHistory(7,0);
+  const prevWeek = rangeHistory(14,7);
+  const sessionsPlanned = DATA.sessions.length;
+  const sessionsDone = thisWeek.length;
+  const prevSessionsDone = prevWeek.length;
+  const completionRate = sessionsPlanned ? Math.min(100, Math.round((sessionsDone/sessionsPlanned)*100)) : 0;
+
+  const totalCalories = sumField(thisWeek,'calories');
+  const totalMinutes = sumField(thisWeek,'duration');
+  const avgHr = thisWeek.length ? Math.round(sumField(thisWeek,'hr')/thisWeek.length) : 0;
+
+  const prevCalories = sumField(prevWeek,'calories');
+  const prevMinutes = sumField(prevWeek,'duration');
+
+  const pct = (cur,prev)=> prev ? Math.round(((cur-prev)/prev)*100) : (cur>0?100:0);
+  const deltaCaloriesPct = pct(totalCalories, prevCalories);
+  const deltaMinutesPct = pct(totalMinutes, prevMinutes);
+  const deltaSessions = sessionsDone - prevSessionsDone;
+
+  // daily buckets, today back to 6 days ago
+  const days = [];
+  for(let i=6;i>=0;i--){
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const dayHist = DATA.history.filter(h=> new Date(h.date).toDateString() === d.toDateString());
+    days.push({ date:d, label: WEEKDAY_SHORT[d.getDay()], calories: sumField(dayHist,'calories'), minutes: sumField(dayHist,'duration'), count: dayHist.length });
+  }
+  const maxDayCal = Math.max(1, ...days.map(d=>d.calories));
+
+  // per-session breakdown
+  const sessBreak = DATA.sessions.map(s=>{
+    const cnt = thisWeek.filter(h=>h.sessionId===s.id).length;
+    return { title:s.title, count:cnt, done: cnt>0 };
+  });
+  const skipped = sessBreak.filter(s=>!s.done).map(s=>s.title);
+
+  // actual vs planned duration ratio
+  let ratios = [];
+  thisWeek.forEach(h=>{
+    const s = DATA.sessions.find(x=>x.id===h.sessionId);
+    if(s && s.duration) ratios.push(h.duration/s.duration);
+  });
+  const avgRatio = ratios.length ? ratios.reduce((a,b)=>a+b,0)/ratios.length : null;
+
+  // longest gap between session dates this week (in days)
+  let longestGap = 0;
+  if(thisWeek.length >= 2){
+    const times = thisWeek.map(h=>new Date(h.date).getTime()).sort((a,b)=>a-b);
+    for(let i=1;i<times.length;i++){ longestGap = Math.max(longestGap, Math.round((times[i]-times[i-1])/(24*3600*1000))); }
+  } else if(thisWeek.length <= 1){
+    longestGap = 7;
+  }
+
+  // weight trend over last 14 days
+  let weightDelta = null;
+  if(DATA.weightLog && DATA.weightLog.length){
+    const now = Date.now();
+    const recent = DATA.weightLog.filter(w => (now-new Date(w.date).getTime())/(24*3600*1000) <= 14);
+    if(recent.length >= 2){
+      weightDelta = +(recent[recent.length-1].weight - recent[0].weight).toFixed(1);
+    }
+  }
+
+  // insights
+  const insights = [];
+  if(!sessionsPlanned){
+    insights.push('هنوز برنامه‌ای تعریف نکردی؛ اول جلسه‌ها رو اضافه کن تا بشه پیشرفتت رو سنجید.');
+  } else {
+    insights.push(`این هفته ${fa(sessionsDone)} از ${fa(sessionsPlanned)} جلسه رو انجام دادی (${fa(completionRate)}٪ برنامه).`);
+    if(prevSessionsDone>0){
+      if(deltaSessions>0) insights.push(`نسبت به هفته قبل (${fa(prevSessionsDone)} جلسه) ${fa(deltaSessions)} جلسه پیشرفت داشتی 👏`);
+      else if(deltaSessions<0) insights.push(`نسبت به هفته قبل (${fa(prevSessionsDone)} جلسه) ${fa(Math.abs(deltaSessions))} جلسه افت داشتی؛ سعی کن تکرار نشه.`);
+      else insights.push('دقیقاً همون تعداد جلسه‌ی هفته قبل رو حفظ کردی.');
+    }
+    if(skipped.length){
+      insights.push(`جلسه${skipped.length>1?'های':'ی'} «${skipped.join('، ')}» این هفته انجام نشده؛ اول هفته‌ی بعد برنامه‌ریزیش کن.`);
+    }
+    if(avgRatio!==null && avgRatio<0.75){
+      insights.push('میانگین مدت واقعی تمریناتت کمتر از زمان برنامه‌ریزی‌شده‌ست؛ سعی کن جلسه رو کامل انجام بدی.');
+    }
+    if(longestGap>=4 && sessionsDone>0){
+      insights.push(`بین دو جلسه‌ات تا ${fa(longestGap)} روز فاصله افتاده؛ فاصله زیاد روند رو کند می‌کنه.`);
+    }
+    if(weightDelta!==null){
+      if(weightDelta<0) insights.push(`وزنت ${fa(Math.abs(weightDelta))} کیلوگرم کم شده؛ روند خوبیه.`);
+      else if(weightDelta>0) insights.push(`وزنت ${fa(weightDelta)} کیلوگرم افزایش داشته.`);
+      else insights.push('وزنت نسبت به دوره قبل تقریباً ثابت مونده.');
+    } else {
+      insights.push('وزنت رو مرتب از تنظیمات به‌روزرسانی کن تا روندش دقیق‌تر بررسی بشه.');
+    }
+    if(completionRate>=90) insights.push('با این ثباتی که داری، وقتشه شدت یکی از جلسات رو یک پله بالا ببری.');
+    else if(completionRate>0 && completionRate<50) insights.push('روی ثبات تمرکز کن؛ حتی انجام کامل تعداد کمتر جلسه بهتر از جا انداختنشونه.');
+  }
+
+  return { sessionsPlanned, sessionsDone, prevSessionsDone, completionRate, totalCalories, totalMinutes, avgHr,
+    deltaCaloriesPct, deltaMinutesPct, deltaSessions, days, maxDayCal, sessBreak, skipped, avgRatio, longestGap, weightDelta, insights };
+}
+
+/* ---------------- home render ---------------- */
+function ringSVG(id, pct, size, stroke, color, trackColor){
+  const r = (size-stroke)/2;
+  const c = 2*Math.PI*r;
+  const offset = c*(1-Math.min(pct,100)/100);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="${trackColor}" stroke-width="${stroke}" fill="none"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="${color}" stroke-width="${stroke}" fill="none"
+      stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${offset}" id="${id}"/>
+  </svg>`;
+}
+
+function renderHome(){
+  const p = DATA.profile;
+  document.getElementById('h-greet').textContent = `سلام، ${p.name} 👋`;
+  document.getElementById('h-sub').textContent = `هفته ${fa(DATA.settings.week)} ${DATA.settings.gymName}`;
+  document.getElementById('h-avatar').textContent = p.name.trim().charAt(0) || 'م';
+  updateClock();
+  updateDateLine();
+
+  const hero = document.getElementById('hero');
+  const exList = document.getElementById('exList');
+
+  if(!DATA.sessions.length){
+    hero.innerHTML = `
+      <div class="hero-tag">هنوز برنامه‌ای ثبت نشده</div>
+      <div class="hero-title">اولین جلسه تمرینی‌ات رو اضافه کن</div>
+      <button class="btn-empty" onclick="openEditor(1)">+ افزودن برنامه تمرینی</button>
+    `;
+    exList.innerHTML = '';
+    document.getElementById('statRow').innerHTML = '';
+    document.getElementById('footNote').textContent = 'با افزودن یک جلسه شروع کن 🎯';
+    return;
+  }
+
+  const idx = DATA.currentIndex % DATA.sessions.length;
+  const s = DATA.sessions[idx];
+  const wk = weeklyHistory();
+  const donePct = Math.min(100, Math.round((wk.length / DATA.sessions.length) * 100));
+
+  const sl = DATA.settings.sessionsLeft;
+  const sessionsLeftHtml = (sl!==null && sl!==undefined) ? `
+      <div class="hs-div"></div>
+      <div class="hs-item"><div class="v" style="${sl<=2?'color:#ff6a63;':''}">${fa(sl)}</div><div class="l">جلسه مونده</div></div>` : '';
+
+  hero.innerHTML = `
+    <div class="hero-top">
+      <div>
+        <div class="hero-tag">تمرین امروز</div>
+        <div class="hero-title">${s.title}</div>
+      </div>
+      <div class="ring-wrap">
+        ${ringSVG('heroRing', donePct, 80, 7, '#ff5c7a', 'rgba(255,255,255,.08)')}
+        <div class="ring-center">
+          <div class="ring-pct">${fa(donePct)}٪</div>
+          <div class="ring-week">هفته ${fa(DATA.settings.week)}</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hs-item"><div class="v">${s.level}</div><div class="l">شدت</div></div>
+      <div class="hs-div"></div>
+      <div class="hs-item"><div class="v">${fa(s.duration)} دقیقه</div><div class="l">مدت</div></div>
+      <div class="hs-div"></div>
+      <div class="hs-item"><div class="v">${fa(s.exercises.length)} حرکت</div><div class="l">حرکات</div></div>${sessionsLeftHtml}
+    </div>
+    <div class="hero-venue">
+      <span>📍</span><span>${DATA.settings.gymName}</span>
+    </div>
+    <button class="btn-start" onclick="startWorkout()">▶ شروع تمرین</button>
+  `;
+
+  const totalCal = wk.reduce((a,h)=>a+h.calories,0);
+  const totalMin = wk.reduce((a,h)=>a+h.duration,0);
+  const avgHr = wk.length ? Math.round(wk.reduce((a,h)=>a+h.hr,0)/wk.length) : 0;
+
+  document.getElementById('statRow').innerHTML = `
+    <div class="stat-item">
+      ${ringSVG('r1', Math.min(100,(avgHr/180)*100), 64, 6, 'var(--ring-purple)', '#eceef2')}
+      <div class="num">${fa(avgHr)||'-'}</div><div class="lbl">ضربان میانگین</div>
+    </div>
+    <div class="stat-item">
+      ${ringSVG('r2', Math.min(100,(totalMin/150)*100), 64, 6, 'var(--ring-gold)', '#eceef2')}
+      <div class="num">${fa(totalMin)}</div><div class="lbl">دقیقه فعال</div>
+    </div>
+    <div class="stat-item">
+      ${ringSVG('r3', Math.min(100,(totalCal/2000)*100), 64, 6, 'var(--ring-pink)', '#eceef2')}
+      <div class="num">${fa(totalCal)}</div><div class="lbl">کالری</div>
+    </div>
+  `;
+
+  const doneToday = s._done || [];
+  exList.innerHTML = s.exercises.map((ex,i)=>`
+    <div class="exrow ${doneToday[i]?'done':''}">
+      <div class="check ${doneToday[i]?'on':''}">${doneToday[i]?'<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</div>
+      <div class="ex-name">${ex.name}</div>
+      <div class="ex-meta">${ex.sets?fa(ex.sets)+'×':''}${ex.reps||''}</div>
+    </div>
+  `).join('');
+  document.getElementById('footNote').textContent = 'امروز روز خوبی برای تمرینه 💪';
+}
+
+/* ---------------- editor ---------------- */
+function openEditor(programTab){
+  document.getElementById('pf-name').value = DATA.profile.name;
+  document.getElementById('pf-weight').value = DATA.profile.weight;
+  document.getElementById('pf-height').value = DATA.profile.height;
+  document.getElementById('pf-gym').value = DATA.settings.gymName;
+  document.getElementById('pf-week').value = DATA.settings.week;
+  document.getElementById('pf-sessions-left').value = (DATA.settings.sessionsLeft===null || DATA.settings.sessionsLeft===undefined) ? '' : DATA.settings.sessionsLeft;
+  renderSessList();
+  document.getElementById('sessFormHost').innerHTML = '';
+  switchTab(programTab ? 'program' : 'profile');
+  showScreen('editor');
+}
+function closeEditor(){ renderHome(); showScreen('home'); }
+function switchTab(name){
+  document.getElementById('tab-profile').classList.toggle('active', name==='profile');
+  document.getElementById('tab-program').classList.toggle('active', name==='program');
+  document.getElementById('tab-report').classList.toggle('active', name==='report');
+  document.getElementById('pane-profile').style.display = name==='profile' ? 'block':'none';
+  document.getElementById('pane-program').style.display = name==='program' ? 'block':'none';
+  document.getElementById('pane-report').style.display = name==='report' ? 'block':'none';
+  if(name==='report') renderReportPane();
+}
+
+/* ---------------- report pane (weekly vs. total) ---------------- */
+function daysSinceStart(){
+  let start = (DATA.profile && DATA.profile.createdAt) ? new Date(DATA.profile.createdAt).getTime() : null;
+  if(!start && DATA.history && DATA.history.length){
+    start = Math.min(...DATA.history.map(h=>new Date(h.date).getTime()));
+  }
+  if(!start) return 0;
+  return Math.max(0, Math.floor((Date.now()-start)/(24*3600*1000)));
+}
+function renderReportPane(){
+  const host = document.getElementById('pane-report');
+  const days = daysSinceStart();
+  if(days < 14){
+    host.innerHTML = `
+      <div class="report-box">
+        <div class="ricon">📄</div>
+        <h3>گزارش ۷ روز اخیر</h3>
+        <p>شامل وزن و قد، دایره‌های کالری/دقیقه فعال/ضربان، مقایسه با هفته قبل، نمودار روزانه و تحلیل هوشمند از عملکردت.</p>
+        <button class="btn-primary" id="reportBtn" onclick="generateReport()">📥 دانلود PDF گزارش</button>
+        <p style="margin-top:14px;font-size:11px;color:var(--muted);font-weight:600;">گزارش «نتیجه کل» بعد از ۲ هفته استفاده از برنامه در دسترس قرار می‌گیره.</p>
+      </div>`;
+  } else {
+    host.innerHTML = `
+      <div class="report-box">
+        <div class="ricon">📊</div>
+        <h3>کدوم گزارش رو می‌خوای؟</h3>
+        <p>چون بیشتر از ۲ هفته‌ست که تمرین می‌کنی، می‌تونی نتیجه‌ی همین هفته رو ببینی یا نتیجه‌ی کل دوره‌ات رو.</p>
+        <button class="btn-primary" id="reportBtn" onclick="generateReport()">📥 نتیجه (همین هفته)</button>
+        <button class="btn-secondary" id="reportFullBtn" style="margin-top:10px;" onclick="generateFullReport()">📥 نتیجه کل (کل دوره)</button>
+      </div>`;
+  }
+}
+async function saveProfile(){
+  const name = document.getElementById('pf-name').value.trim();
+  if(!name){ toast('اسم رو وارد کن'); return; }
+  DATA.profile.name = name;
+  DATA.profile.weight = parseFloat(document.getElementById('pf-weight').value) || DATA.profile.weight;
+  DATA.profile.height = parseFloat(document.getElementById('pf-height').value) || DATA.profile.height;
+  DATA.settings.gymName = document.getElementById('pf-gym').value.trim() || DATA.settings.gymName;
+  DATA.settings.week = parseInt(document.getElementById('pf-week').value) || DATA.settings.week;
+  const slRaw = document.getElementById('pf-sessions-left').value;
+  DATA.settings.sessionsLeft = slRaw==='' ? null : Math.max(0, parseInt(slRaw) || 0);
+  logWeight(DATA.profile.weight);
+  await saveData(DATA);
+  toast('ذخیره شد ✅');
+  renderHome();
+}
+
+function renderSessList(){
+  const host = document.getElementById('sessList');
+  if(!DATA.sessions.length){
+    host.innerHTML = `<div style="color:var(--muted);font-size:13.5px;font-weight:600;padding:8px 2px 18px;">هنوز جلسه‌ای اضافه نکردی.</div>`;
+    return;
+  }
+  host.innerHTML = DATA.sessions.map((s,i)=>`
+    <div class="sess-card">
+      <div class="row1">
+        <div>
+          <div class="title">${s.title}</div>
+          <div class="sub">${s.level} · ${fa(s.duration)} دقیقه · ${fa(s.exercises.length)} حرکت</div>
+          ${i===(DATA.currentIndex % DATA.sessions.length) ? '<span class="current-badge">جلسه بعدی</span>':''}
+        </div>
+        <div class="sess-actions">
+          <button class="edit" onclick="openSessionForm(${i})">ویرایش</button>
+          <button class="del" onclick="deleteSession(${i})">حذف</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function deleteSession(i){
+  DATA.sessions.splice(i,1);
+  if(DATA.currentIndex >= DATA.sessions.length) DATA.currentIndex = 0;
+  await saveData(DATA);
+  renderSessList();
+  renderHome();
+  toast('حذف شد');
+}
+
+let editingIndex = null;
+function openSessionForm(i){
+  editingIndex = (typeof i === 'number') ? i : null;
+  const s = editingIndex!==null ? DATA.sessions[editingIndex] : {title:'',level:'متوسط',duration:30,exercises:[{name:'',sets:'',reps:''}]};
+  const host = document.getElementById('sessFormHost');
+  host.innerHTML = `
+    <div class="form-panel">
+      <h3>${editingIndex!==null ? 'ویرایش جلسه' : 'جلسه جدید'}</h3>
+      <div class="field"><label>عنوان جلسه</label><input id="sf-title" value="${s.title.replace(/"/g,'')}" placeholder="مثلاً روز سینه و پشت‌بازو"></div>
+      <div class="grid2">
+        <div class="field"><label>شدت</label>
+          <select id="sf-level">
+            <option ${s.level==='سبک'?'selected':''}>سبک</option>
+            <option ${s.level==='متوسط'?'selected':''}>متوسط</option>
+            <option ${s.level==='سنگین'?'selected':''}>سنگین</option>
+          </select>
+        </div>
+        <div class="field"><label>مدت (دقیقه)</label><input id="sf-duration" type="number" value="${s.duration}"></div>
+      </div>
+      <label style="display:block;font-size:13px;color:var(--muted);margin-bottom:8px;font-weight:600;">حرکات</label>
+      <div id="sf-exrows"></div>
+      <button type="button" class="add-ex-btn" onclick="addExRow()">+ افزودن حرکت</button>
+      <div class="btn-row">
+        <button class="btn-primary" style="margin-top:0;" onclick="saveSession()">ذخیره جلسه</button>
+        <button class="btn-secondary" onclick="cancelSessionForm()">انصراف</button>
+      </div>
+    </div>
+  `;
+  const rowsHost = document.getElementById('sf-exrows');
+  rowsHost.innerHTML = '';
+  s.exercises.forEach(ex => addExRow(ex));
+}
+function addExRow(ex){
+  ex = ex || {name:'',sets:'',reps:''};
+  const rowsHost = document.getElementById('sf-exrows');
+  const row = document.createElement('div');
+  row.className = 'exform-row';
+  row.innerHTML = `
+    <input placeholder="نام حرکت" class="ex-name-in" value="${(ex.name||'').replace(/"/g,'')}">
+    <input placeholder="ست" class="ex-sets-in" style="max-width:52px;" value="${ex.sets||''}">
+    <input placeholder="تکرار" class="ex-reps-in" style="max-width:60px;" value="${ex.reps||''}">
+    <button type="button" class="rm" onclick="this.parentElement.remove()">×</button>
+  `;
+  rowsHost.appendChild(row);
+}
+function cancelSessionForm(){
+  document.getElementById('sessFormHost').innerHTML = '';
+  editingIndex = null;
+}
+async function saveSession(){
+  const title = document.getElementById('sf-title').value.trim();
+  if(!title){ toast('عنوان جلسه رو وارد کن'); return; }
+  const level = document.getElementById('sf-level').value;
+  const duration = parseInt(document.getElementById('sf-duration').value) || 30;
+  const rows = [...document.querySelectorAll('#sf-exrows .exform-row')];
+  const exercises = rows.map(r => ({
+    name: r.querySelector('.ex-name-in').value.trim(),
+    sets: r.querySelector('.ex-sets-in').value.trim(),
+    reps: r.querySelector('.ex-reps-in').value.trim()
+  })).filter(e => e.name);
+  if(!exercises.length){ toast('حداقل یک حرکت اضافه کن'); return; }
+
+  const sessionObj = { id: editingIndex!==null ? DATA.sessions[editingIndex].id : uid(), title, level, duration, exercises };
+  if(editingIndex!==null){ DATA.sessions[editingIndex] = sessionObj; }
+  else{ DATA.sessions.push(sessionObj); }
+
+  await saveData(DATA);
+  cancelSessionForm();
+  renderSessList();
+  renderHome();
+  toast('جلسه ذخیره شد ✅');
+}
+
+/* ---------------- lazy-load heavy PDF libs (only when a report is actually requested) ---------------- */
+let _reportLibsPromise = null;
+function loadScript(src){
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = () => reject(new Error('load failed: '+src));
+    document.head.appendChild(s);
+  });
+}
+function loadReportLibs(){
+  if(!_reportLibsPromise){
+    _reportLibsPromise = Promise.all([
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'),
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')
+    ]);
+  }
+  return _reportLibsPromise;
+}
+
+/* ---------------- PDF report ---------------- */
+async function generateReport(){
+  const btn = document.getElementById('reportBtn');
+  const hasHistory = DATA.history && DATA.history.length;
+  if(!hasHistory){ toast('هنوز داده‌ای برای گزارش ثبت نشده'); return; }
+
+  btn.disabled = true; btn.textContent = 'در حال آماده‌سازی...';
+  try{
+    await loadReportLibs();
+  }catch(e){
+    console.error(e);
+    toast('اتصال اینترنت رو چک کن و دوباره امتحان کن');
+    btn.disabled = false;
+    btn.textContent = daysSinceStart()>=14 ? '📥 نتیجه (همین هفته)' : '📥 دانلود PDF گزارش';
+    return;
+  }
+  btn.textContent = 'در حال ساخت PDF...';
+
+  const A = analyzeWeek();
+  const p = DATA.profile;
+  const now = new Date();
+  const weekAgo = new Date(); weekAgo.setDate(now.getDate()-6);
+  const fmt = d => d.toLocaleDateString('fa-IR');
+
+  const barsHtml = A.days.map(d => `
+    <div class="rp-bar-col">
+      <div class="rp-bar-val">${d.calories?fa(d.calories):''}</div>
+      <div class="rp-bar" style="height:${Math.max(6,(d.calories/A.maxDayCal)*100)}%;"></div>
+      <div class="rp-bar-lbl">${d.label}</div>
+    </div>`).join('');
+
+  const sessHtml = A.sessBreak.length ? A.sessBreak.map(s => `
+    <div class="rp-sess-row">
+      <div class="rp-sess-title">${s.title}</div>
+      <div class="rp-sess-bar"><div class="rp-sess-bar-in" style="width:${s.done?100:0}%;"></div></div>
+      <div class="rp-sess-status" style="color:${s.done?'#3ecb71':'#e6394f'};">${s.done? 'انجام‌شده '+fa(s.count)+'x' : 'جا افتاده'}</div>
+    </div>`).join('') : '<div style="font-size:13px;color:#9497a3;font-weight:600;">برنامه‌ای ثبت نشده</div>';
+
+  const insightHtml = A.insights.map(i=>`<p>${i}</p>`).join('');
+
+  const arrow = v => v>0 ? `<span class="arrow up">▲ ${fa(Math.abs(v))}٪</span>` : v<0 ? `<span class="arrow down">▼ ${fa(Math.abs(v))}٪</span>` : `<span class="arrow">＝</span>`;
+
+  document.getElementById('reportRoot').innerHTML = `
+    <div class="rp-header">
+      <div>
+        <h1>گزارش هفتگی تمرین</h1>
+        <div class="sub">${p.name} · ${DATA.settings.gymName} · هفته ${fa(DATA.settings.week)}</div>
+      </div>
+      <div class="range">از ${fmt(weekAgo)} تا ${fmt(now)}</div>
+    </div>
+
+    <div class="rp-section">
+      <h2>پروفایل</h2>
+      <div class="rp-grid3">
+        <div class="rp-card"><div class="v">${fa(p.weight)} kg</div><div class="l">وزن فعلی</div></div>
+        <div class="rp-card"><div class="v">${fa(p.height)} cm</div><div class="l">قد</div></div>
+        <div class="rp-card"><div class="v">${A.weightDelta===null?'—':(A.weightDelta>0?'+':'')+fa(A.weightDelta)+' kg'}</div><div class="l">تغییر وزن (۱۴ روز)</div></div>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <h2>عملکرد ۷ روز اخیر</h2>
+      <div class="rp-rings">
+        <div class="rp-ring-item">${ringSVG('rp1', Math.min(100,(A.totalCalories/2000)*100), 84, 8, '#ff5c7a', '#eceef2')}<div class="num">${fa(A.totalCalories)}</div><div class="lbl">کالری</div></div>
+        <div class="rp-ring-item">${ringSVG('rp2', Math.min(100,(A.totalMinutes/150)*100), 84, 8, '#f5a94f', '#eceef2')}<div class="num">${fa(A.totalMinutes)}</div><div class="lbl">دقیقه فعال</div></div>
+        <div class="rp-ring-item">${ringSVG('rp3', Math.min(100,(A.avgHr/180)*100), 84, 8, '#8b7cf6', '#eceef2')}<div class="num">${fa(A.avgHr)||'-'}</div><div class="lbl">ضربان میانگین</div></div>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <h2>مقایسه با هفته قبل</h2>
+      <div class="rp-delta">
+        <div class="rp-delta-card"><div class="v" style="font-weight:800;">${fa(A.sessionsDone)} جلسه</div>${arrow(A.deltaSessions)}<div class="l" style="font-size:11px;color:#9497a3;font-weight:700;margin-top:4px;">تعداد جلسات</div></div>
+        <div class="rp-delta-card"><div class="v" style="font-weight:800;">${fa(A.totalCalories)}</div>${arrow(A.deltaCaloriesPct)}<div class="l" style="font-size:11px;color:#9497a3;font-weight:700;margin-top:4px;">کالری</div></div>
+        <div class="rp-delta-card"><div class="v" style="font-weight:800;">${fa(A.totalMinutes)}</div>${arrow(A.deltaMinutesPct)}<div class="l" style="font-size:11px;color:#9497a3;font-weight:700;margin-top:4px;">دقیقه فعال</div></div>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <h2>نمودار روزانه کالری</h2>
+      <div class="rp-bars">${barsHtml}</div>
+    </div>
+
+    <div class="rp-section">
+      <h2>وضعیت جلسات برنامه</h2>
+      ${sessHtml}
+    </div>
+
+    <div class="rp-section">
+      <h2>تحلیل و پیشنهاد</h2>
+      <div class="rp-insight">${insightHtml}</div>
+    </div>
+
+    <div class="rp-footer">تولید شده در اپلیکیشن اوتانا · ${fmt(now)}</div>
+  `;
+
+  try{
+    await rasterizeAndSave(`گزارش-اوتانا-هفته-${DATA.settings.week}.pdf`);
+    toast('گزارش دانلود شد ✅');
+  }catch(e){
+    console.error(e);
+    toast('ساخت گزارش با خطا مواجه شد');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = daysSinceStart()>=14 ? '📥 نتیجه (همین هفته)' : '📥 دانلود PDF گزارش';
+  }
+}
+
+/* shared: rasterize #reportRoot and save as a single-page PDF (page sized to fit all content) */
+async function rasterizeAndSave(filename){
+  await document.fonts.ready;
+  const root = document.getElementById('reportRoot');
+  const canvas = await html2canvas(root, { scale: 2, backgroundColor: '#ffffff', useCORS:true });
+  const { jsPDF } = window.jspdf;
+  const pageWidth = 595.28; // A4 width in pt, kept for a familiar page width
+  const imgWidth = pageWidth;
+  const imgHeight = canvas.height * imgWidth / canvas.width;
+  const imgData = canvas.toDataURL('image/png');
+
+  // single page sized exactly to the content height so nothing is split across pages
+  const pdf = new jsPDF({ orientation: imgHeight >= imgWidth ? 'p' : 'l', unit: 'pt', format: [imgWidth, imgHeight] });
+  pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+  pdf.save(filename);
+}
+
+/* ---------------- all-time analysis engine ---------------- */
+function analyzeAll(){
+  const hist = DATA.history || [];
+  const totalSessions = hist.length;
+  const totalCalories = sumField(hist,'calories');
+  const totalMinutes = sumField(hist,'duration');
+  const avgHr = hist.length ? Math.round(sumField(hist,'hr')/hist.length) : 0;
+  const days = daysSinceStart();
+  const weeks = Math.max(1, days/7);
+  const avgSessionsPerWeek = +(totalSessions/weeks).toFixed(1);
+
+  const sessBreak = DATA.sessions.map(s=>{
+    const cnt = hist.filter(h=>h.sessionId===s.id).length;
+    return { title:s.title, count:cnt, done: cnt>0 };
+  });
+
+  let weightDelta = null;
+  if(DATA.weightLog && DATA.weightLog.length >= 2){
+    const first = DATA.weightLog[0].weight, last = DATA.weightLog[DATA.weightLog.length-1].weight;
+    weightDelta = +(last-first).toFixed(1);
+  }
+
+  const totalWeeks = Math.max(1, Math.min(12, Math.ceil(days/7)));
+  const weekBuckets = [];
+  for(let i=totalWeeks-1;i>=0;i--){
+    const arr = rangeHistory((i+1)*7, i*7);
+    weekBuckets.push({ label:'ه'+fa(totalWeeks-i), calories: sumField(arr,'calories') });
+  }
+  const maxWeekCal = Math.max(1, ...weekBuckets.map(w=>w.calories));
+
+  const insights = [];
+  insights.push(`در طول ${fa(days)} روز گذشته، مجموعاً ${fa(totalSessions)} جلسه تمرین انجام دادی.`);
+  if(DATA.sessions.length) insights.push(`به‌طور میانگین ${fa(avgSessionsPerWeek)} جلسه در هفته تمرین کردی (از ${fa(DATA.sessions.length)} جلسه برنامه‌ریزی‌شده).`);
+  const skippedAll = sessBreak.filter(s=>!s.done).map(s=>s.title);
+  if(skippedAll.length) insights.push(`جلسه${skippedAll.length>1?'های':'ی'} «${skippedAll.join('، ')}» رو تا الان اصلاً انجام نداده‌ای.`);
+  if(weightDelta!==null){
+    if(weightDelta<0) insights.push(`از شروع برنامه تا الان ${fa(Math.abs(weightDelta))} کیلوگرم وزن کم کردی 👏`);
+    else if(weightDelta>0) insights.push(`از شروع برنامه تا الان وزنت ${fa(weightDelta)} کیلوگرم افزایش داشته.`);
+    else insights.push('وزنت از شروع برنامه تا الان تقریباً ثابت مونده.');
+  } else {
+    insights.push('وزنت رو مرتب از تنظیمات به‌روزرسانی کن تا روند کل دوره دقیق‌تر بررسی بشه.');
+  }
+  if(DATA.sessions.length){
+    if(avgSessionsPerWeek >= DATA.sessions.length) insights.push('ثباتت در کل دوره عالی بوده؛ وقتشه یک سطح سخت‌تر رو امتحان کنی.');
+    else if(avgSessionsPerWeek < DATA.sessions.length/2) insights.push('در کل دوره تعداد جلساتت کمتر از نصف برنامه بوده؛ سعی کن نظم بیشتری داشته باشی.');
+  }
+
+  return { totalSessions, totalCalories, totalMinutes, avgHr, days, avgSessionsPerWeek, sessBreak, weightDelta, weekBuckets, maxWeekCal, insights };
+}
+
+/* ---------------- PDF report: total/all-time ---------------- */
+async function generateFullReport(){
+  const btn = document.getElementById('reportFullBtn');
+  const hasHistory = DATA.history && DATA.history.length;
+  if(!hasHistory){ toast('هنوز داده‌ای برای گزارش ثبت نشده'); return; }
+
+  btn.disabled = true; btn.textContent = 'در حال آماده‌سازی...';
+  try{
+    await loadReportLibs();
+  }catch(e){
+    console.error(e);
+    toast('اتصال اینترنت رو چک کن و دوباره امتحان کن');
+    btn.disabled = false;
+    btn.textContent = '📥 نتیجه کل (کل دوره)';
+    return;
+  }
+  btn.textContent = 'در حال ساخت PDF...';
+
+  const A = analyzeAll();
+  const p = DATA.profile;
+  const now = new Date();
+  const startDate = new Date(Date.now() - A.days*24*3600*1000);
+  const fmt = d => d.toLocaleDateString('fa-IR');
+
+  const barsHtml = A.weekBuckets.map(w => `
+    <div class="rp-bar-col">
+      <div class="rp-bar-val">${w.calories?fa(w.calories):''}</div>
+      <div class="rp-bar" style="height:${Math.max(6,(w.calories/A.maxWeekCal)*100)}%;"></div>
+      <div class="rp-bar-lbl">${w.label}</div>
+    </div>`).join('');
+
+  const sessHtml = A.sessBreak.length ? A.sessBreak.map(s => `
+    <div class="rp-sess-row">
+      <div class="rp-sess-title">${s.title}</div>
+      <div class="rp-sess-bar"><div class="rp-sess-bar-in" style="width:${s.done?100:0}%;"></div></div>
+      <div class="rp-sess-status" style="color:${s.done?'#3ecb71':'#e6394f'};">${s.done? 'انجام‌شده '+fa(s.count)+'x' : 'انجام نشده'}</div>
+    </div>`).join('') : '<div style="font-size:13px;color:#9497a3;font-weight:600;">برنامه‌ای ثبت نشده</div>';
+
+  const insightHtml = A.insights.map(i=>`<p>${i}</p>`).join('');
+
+  document.getElementById('reportRoot').innerHTML = `
+    <div class="rp-header">
+      <div>
+        <h1>گزارش کل برنامه</h1>
+        <div class="sub">${p.name} · ${DATA.settings.gymName} · ${fa(A.days)} روز از شروع</div>
+      </div>
+      <div class="range">از ${fmt(startDate)} تا ${fmt(now)}</div>
+    </div>
+
+    <div class="rp-section">
+      <h2>پروفایل</h2>
+      <div class="rp-grid3">
+        <div class="rp-card"><div class="v">${fa(p.weight)} kg</div><div class="l">وزن فعلی</div></div>
+        <div class="rp-card"><div class="v">${fa(p.height)} cm</div><div class="l">قد</div></div>
+        <div class="rp-card"><div class="v">${A.weightDelta===null?'—':(A.weightDelta>0?'+':'')+fa(A.weightDelta)+' kg'}</div><div class="l">تغییر وزن از شروع</div></div>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <h2>عملکرد کل دوره</h2>
+      <div class="rp-grid3">
+        <div class="rp-card"><div class="v">${fa(A.totalSessions)}</div><div class="l">کل جلسات</div></div>
+        <div class="rp-card"><div class="v">${fa(A.totalCalories)}</div><div class="l">کل کالری</div></div>
+        <div class="rp-card"><div class="v">${fa(A.avgSessionsPerWeek)}</div><div class="l">میانگین جلسه/هفته</div></div>
+      </div>
+    </div>
+
+    <div class="rp-section">
+      <h2>روند هفتگی کالری</h2>
+      <div class="rp-bars">${barsHtml}</div>
+    </div>
+
+    <div class="rp-section">
+      <h2>وضعیت کلی جلسات برنامه</h2>
+      ${sessHtml}
+    </div>
+
+    <div class="rp-section">
+      <h2>تحلیل کل دوره</h2>
+      <div class="rp-insight">${insightHtml}</div>
+    </div>
+
+    <div class="rp-footer">تولید شده در اپلیکیشن اوتانا · ${fmt(now)}</div>
+  `;
+
+  try{
+    await rasterizeAndSave('گزارش-کل-اوتانا.pdf');
+    toast('گزارش کل دانلود شد ✅');
+  }catch(e){
+    console.error(e);
+    toast('ساخت گزارش با خطا مواجه شد');
+  }finally{
+    btn.disabled = false; btn.textContent = '📥 نتیجه کل (کل دوره)';
+  }
+}
+
+/* ---------------- workout flow ---------------- */
+let wkState = null;
+function persistWorkoutState(){
+  if(!wkState) return;
+  DATA.workoutState = {
+    sessionIndex: wkState.sessionIndex,
+    curEx: wkState.curEx,
+    doneArr: wkState.doneArr,
+    startedAt: wkState.startedAt
+  };
+  saveData(DATA);
+}
+function startWorkout(){
+  const idx = DATA.currentIndex % DATA.sessions.length;
+  const s = DATA.sessions[idx];
+  wkState = { sessionIndex: idx, curEx: 0, doneArr: s.exercises.map(()=>false), startedAt: Date.now() };
+  document.getElementById('wk-title').textContent = s.title;
+  renderWkList();
+  clearInterval(wkState.timerId);
+  wkState.timerId = setInterval(updateWkTimer, 1000);
+  updateWkTimer();
+  showScreen('workout');
+  persistWorkoutState();
+}
+/* resumes an in-progress workout after the app was closed/reopened (only ends on finish, not on relaunch) */
+function resumeWorkout(){
+  const ws = DATA.workoutState;
+  if(!ws || !DATA.sessions[ws.sessionIndex]){ DATA.workoutState = null; saveData(DATA); showScreen('home'); return; }
+  const s = DATA.sessions[ws.sessionIndex];
+  wkState = {
+    sessionIndex: ws.sessionIndex,
+    curEx: Math.min(ws.curEx, s.exercises.length-1),
+    doneArr: (ws.doneArr && ws.doneArr.length===s.exercises.length) ? ws.doneArr : s.exercises.map(()=>false),
+    startedAt: ws.startedAt
+  };
+  document.getElementById('wk-title').textContent = s.title;
+  renderWkList();
+  clearInterval(wkState.timerId);
+  wkState.timerId = setInterval(updateWkTimer, 1000);
+  updateWkTimer();
+  showScreen('workout');
+}
+function updateWkTimer(){
+  const sec = Math.floor((Date.now()-wkState.startedAt)/1000);
+  const m = String(Math.floor(sec/60)).padStart(2,'0');
+  const s = String(sec%60).padStart(2,'0');
+  document.getElementById('wk-time').textContent = fa(m)+':'+fa(s);
+}
+function renderWkList(){
+  const s = DATA.sessions[wkState.sessionIndex];
+  const host = document.getElementById('wk-list');
+  host.innerHTML = s.exercises.map((ex,i)=>`
+    <div class="wk-ex ${i===wkState.curEx?'current':''} ${wkState.doneArr[i]?'done':''}">
+      <div class="idx">${fa(i+1)}</div>
+      <div class="name">${ex.name}</div>
+      <div class="meta">${ex.sets?fa(ex.sets)+'×':''}${ex.reps||''}</div>
+    </div>
+  `).join('');
+  const btn = document.getElementById('wk-next-btn');
+  btn.textContent = (wkState.curEx >= s.exercises.length-1) ? 'پایان تمرین' : 'بعدی';
+}
+async function wkNext(){
+  const s = DATA.sessions[wkState.sessionIndex];
+  wkState.doneArr[wkState.curEx] = true;
+  if(wkState.curEx < s.exercises.length-1){
+    wkState.curEx++;
+    renderWkList();
+    persistWorkoutState();
+  } else {
+    await finishWorkout();
+  }
+}
+async function finishWorkout(){
+  clearInterval(wkState.timerId);
+  const s = DATA.sessions[wkState.sessionIndex];
+  const elapsedMin = Math.max(1, Math.round((Date.now()-wkState.startedAt)/60000));
+  const calories = calcCalories(s.level, DATA.profile.weight, elapsedMin);
+  const hr = HR[s.level] || 128;
+  DATA.history.push({ sessionId:s.id, title:s.title, date:new Date().toISOString(), duration:elapsedMin, calories, hr });
+  s._done = wkState.doneArr;
+  DATA.currentIndex = (wkState.sessionIndex+1) % DATA.sessions.length;
+  DATA.workoutState = null;
+  if(DATA.settings.sessionsLeft!==null && DATA.settings.sessionsLeft!==undefined){
+    DATA.settings.sessionsLeft = Math.max(0, DATA.settings.sessionsLeft - 1);
+  }
+  await saveData(DATA);
+  renderHome();
+  showScreen('home');
+  const sessionsMsg = (DATA.settings.sessionsLeft!==null && DATA.settings.sessionsLeft!==undefined)
+    ? ` · ${fa(DATA.settings.sessionsLeft)} جلسه باقی‌مونده`
+    : '';
+  toast(`تمرین تموم شد 🎉 ${fa(calories)} کالری سوزوندی${sessionsMsg}`);
+  wkState = null;
+}
+/* ---------------- playlist (overlay modal — works whether a workout is active or not) ---------------- */
+let plTempSelected = null;
+function openPlaylist(){
+  plTempSelected = DATA.selectedSongId || null;
+  renderPlaylistList();
+  document.getElementById('playlistModal').classList.add('show');
+}
+function closePlaylistModal(){
+  document.getElementById('playlistModal').classList.remove('show');
+  const audio = document.getElementById('plAudio');
+  audio.pause();
+}
+function renderPlaylistList(){
+  const host = document.getElementById('songListHost');
+  const list = DATA.playlist || [];
+  if(!list.length){
+    host.innerHTML = '<div class="pl-empty">هنوز آهنگی اضافه نکردی. از دکمه بالا یک فایل صوتی آپلود کن.</div>';
+    return;
+  }
+  host.innerHTML = list.map(s => `
+    <div class="song-row ${plTempSelected===s.id?'sel':''}">
+      <button class="song-play" onclick="togglePreview('${s.id}')">▶</button>
+      <div class="song-name">${s.name}</div>
+      <button class="song-select" onclick="selectSong('${s.id}')">${plTempSelected===s.id?'انتخاب شد ✓':'انتخاب'}</button>
+      <button class="song-del" onclick="deleteSong('${s.id}')">🗑</button>
+    </div>
+  `).join('');
+}
+function selectSong(id){
+  plTempSelected = id;
+  renderPlaylistList();
+}
+async function handleSongUpload(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 1.5*1024*1024){ toast('حجم فایل باید کمتر از ۱.۵ مگابایت باشه (فضای ذخیره‌سازی مرورگر محدوده)'); e.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const id = uid();
+    try{
+      localStorage.setItem('song_'+id, reader.result);
+      if(!DATA.playlist) DATA.playlist = [];
+      DATA.playlist.push({ id, name: file.name.replace(/\.[^/.]+$/, '') });
+      await saveData(DATA);
+      renderPlaylistList();
+      toast('آهنگ اضافه شد ✅');
+    }catch(err){
+      console.error(err);
+      toast('حافظه مرورگر پره — یه آهنگ کوچیک‌تر امتحان کن یا چندتا رو پاک کن');
+    }
+  };
+  reader.onerror = () => toast('خواندن فایل با خطا مواجه شد');
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+async function deleteSong(id){
+  DATA.playlist = (DATA.playlist||[]).filter(s=>s.id!==id);
+  if(DATA.selectedSongId===id) DATA.selectedSongId = null;
+  if(plTempSelected===id) plTempSelected = null;
+  try{ localStorage.removeItem('song_'+id); }catch(err){ /* ignore */ }
+  await saveData(DATA);
+  renderPlaylistList();
+}
+async function togglePreview(id){
+  const audio = document.getElementById('plAudio');
+  if(audio.dataset.playingId === id && !audio.paused){
+    audio.pause();
+    return;
+  }
+  try{
+    const src = localStorage.getItem('song_'+id);
+    if(!src) throw new Error('song not found');
+    audio.src = src;
+    audio.dataset.playingId = id;
+    await audio.play();
+  }catch(err){
+    console.error(err);
+    toast('پخش آهنگ با خطا مواجه شد');
+  }
+}
+/* confirm: saves the selection and closes the modal — this reveals whatever screen was underneath
+   (home, or the locked workout screen exactly where it was) without any navigation */
+async function confirmPlaylistSelection(){
+  DATA.selectedSongId = plTempSelected;
+  await saveData(DATA);
+  closePlaylistModal();
+  toast(plTempSelected ? 'آهنگ انتخاب شد 🎵' : 'انتخاب پاک شد');
+}
+
+async function exitWorkout(){
+  clearInterval(wkState && wkState.timerId);
+  wkState = null;
+  DATA.workoutState = null;
+  await saveData(DATA);
+  showScreen('home');
+}
+</script>
+</body>
+</html>
